@@ -1,0 +1,60 @@
+{
+  "name": "n8n-nodes-viber-bm",
+  "version": "1.0.0",
+  "description": "n8n community node for the Rakuten Viber Business Messages API (v11.3): text, template, image/GIF, file, video, list and carousel messages",
+  "keywords": [
+    "n8n-community-node-package",
+    "viber",
+    "viber-business-messages",
+    "messaging",
+    "business-messages"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/andrey0001/n8n-nodes-viber-bm",
+  "author": {
+    "name": "Andrey Sorokin",
+    "email": "andrey.s@viber.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrey0001/n8n-nodes-viber-bm.git"
+  },
+  "engines": {
+    "node": ">=18.10",
+    "npm": ">=9.0"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc && gulp build:icons",
+    "dev": "tsc --watch",
+    "format": "prettier nodes credentials --write",
+    "lint": "eslint nodes credentials package.json",
+    "lintfix": "eslint nodes credentials package.json --fix",
+    "prepublishOnly": "npm run build && eslint -c .eslintrc.prepublish.js nodes credentials package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": [
+      "dist/credentials/ViberBusinessMessagesApi.credentials.js"
+    ],
+    "nodes": [
+      "dist/nodes/ViberBusinessMessage/ViberBusinessMessage.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^18.16.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "eslint": "^8.57.0",
+    "eslint-plugin-n8n-nodes-base": "^1.16.3",
+    "gulp": "^5.0.0",
+    "n8n-workflow": "*",
+    "prettier": "^3.3.3",
+    "typescript": "^5.5.4"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}
