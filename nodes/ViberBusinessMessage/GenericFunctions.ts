@@ -189,6 +189,13 @@ export function buildCarouselItems(
 			);
 		}
 
+		if (title.length < LIMITS.CAROUSEL_TITLE_MIN) {
+			throw new NodeOperationError(
+				ctx.getNode(),
+				`Carousel item ${idx + 1} title must be at least ${LIMITS.CAROUSEL_TITLE_MIN} characters.`,
+				{ itemIndex },
+			);
+		}
 		assertMaxLength(ctx, title, LIMITS.CAROUSEL_TITLE_MAX, `Carousel item ${idx + 1} title`, itemIndex);
 		assertMaxLength(
 			ctx,

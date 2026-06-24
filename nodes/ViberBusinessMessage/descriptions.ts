@@ -28,6 +28,12 @@ export const resourceOperations: INodeProperties[] = [
 				description: 'Plain text (transactional, promotional or session)',
 			},
 			{
+				name: 'Send Text + Button',
+				value: 'sendTextButton',
+				action: 'Send text with a button',
+				description: 'Promotional text with a tappable action button',
+			},
+			{
 				name: 'Send Template',
 				value: 'sendTemplate',
 				action: 'Send a transactional template',
@@ -190,7 +196,44 @@ export const operationFields: INodeProperties[] = [
 		displayOptions: showFor('sendText'),
 	},
 
-	// ─── Send Template ────────────────────────────────────────────
+	// ─── Send Text + Button ───────────────────────────────────────
+	{
+		displayName: 'Reach',
+		name: 'textButtonReach',
+		type: 'options',
+		default: 'allDevices',
+		options: [
+			{ name: 'All Devices', value: 'allDevices' },
+			{ name: 'Smartphone Only', value: 'smartphone' },
+		],
+		displayOptions: showFor('sendTextButton'),
+	},
+	{
+		displayName: 'Message Text',
+		name: 'messageText',
+		type: 'string',
+		typeOptions: { rows: 4 },
+		default: '',
+		required: true,
+		description: 'Text content (max 1000 UTF-8 chars). Supports Viber markdown and "\\n".',
+		displayOptions: showFor('sendTextButton'),
+	},
+	{
+		displayName: 'Button Caption',
+		name: 'textButtonCaption',
+		type: 'string',
+		default: '',
+		description: 'Text on the action button (max 30 chars). Leave empty to hide the button.',
+		displayOptions: showFor('sendTextButton'),
+	},
+	{
+		displayName: 'Button / Action URL',
+		name: 'textButtonAction',
+		type: 'string',
+		default: '',
+		description: 'URL the user is directed to when pressing the button',
+		displayOptions: showFor('sendTextButton'),
+	},
 	{
 		displayName: 'Reach',
 		name: 'templateReach',
@@ -432,7 +475,7 @@ export const operationFields: INodeProperties[] = [
 		displayOptions: showFor('sendFile'),
 	},
 
-	// ─── Shared button fields (image-with-button + video-with-button) ─
+	// ─── Button fields for image button layouts ─────────────────────
 	{
 		displayName: 'Button Caption',
 		name: 'caption',
@@ -442,11 +485,8 @@ export const operationFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['message'],
-				operation: ['sendImage', 'sendVideo'],
-			},
-			hide: {
-				imageLayout: ['allDevices', 'smartphone', 'session'],
-				videoLayout: ['video', 'videoText'],
+				operation: ['sendImage'],
+				imageLayout: ['buttonAllDevices', 'buttonSmartphone', 'buttonFullScreen'],
 			},
 		},
 	},
@@ -459,11 +499,39 @@ export const operationFields: INodeProperties[] = [
 		displayOptions: {
 			show: {
 				resource: ['message'],
-				operation: ['sendImage', 'sendVideo'],
+				operation: ['sendImage'],
+				imageLayout: ['buttonAllDevices', 'buttonSmartphone', 'buttonFullScreen'],
 			},
-			hide: {
-				imageLayout: ['allDevices', 'smartphone', 'session'],
-				videoLayout: ['video', 'videoText'],
+		},
+	},
+
+	// ─── Button fields for video button layouts ──────────────────────
+	{
+		displayName: 'Button Caption',
+		name: 'videoCaption',
+		type: 'string',
+		default: '',
+		description: 'Text on the action button (max 30 chars). Leave empty to hide the button.',
+		displayOptions: {
+			show: {
+				resource: ['message'],
+				operation: ['sendVideo'],
+				videoLayout: ['videoTextButton', 'videoTextActionButton'],
+			},
+		},
+	},
+	{
+		displayName: 'Button / Action URL',
+		name: 'videoButtonAction',
+		type: 'string',
+		default: '',
+		description:
+			'URL the user is directed to when pressing the button (used by the Action Button layout)',
+		displayOptions: {
+			show: {
+				resource: ['message'],
+				operation: ['sendVideo'],
+				videoLayout: ['videoTextActionButton'],
 			},
 		},
 	},

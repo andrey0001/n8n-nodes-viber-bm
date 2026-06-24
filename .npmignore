@@ -11,3 +11,5 @@ tsconfig.tsbuildinfo
 .prettierrc.json
 .gitignore
 *.tsbuildinfo
+dist/tsconfig.tsbuildinfo
+dist/package.json

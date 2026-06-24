@@ -66,6 +66,7 @@ addresses against your numeric **Service ID** — there is no API token.
 | Operation | What it sends | Key options |
 |-----------|---------------|-------------|
 | **Send Text** | Plain text | Delivery: Transactional / Promotional / Session |
+| **Send Text + Button** | Promotional text with an action button | Reach, button caption + URL |
 | **Send Template** | Approved transactional / OTP template | Reach, Template ID, language, variables (key-value or JSON) |
 | **Send Image** | Image or animated GIF | Layout (image only, or +text +button), GIF toggle |
 | **Send File** | Document / PDF / spreadsheet link | Category, file URL, name, type |
@@ -134,6 +135,74 @@ meaning, e.g. *"Viber rejected the message (status 9)"* →
   card.
 - **GIF** needs recipient Viber 28.1+; **button list UI** needs 27.8.2+.
 - Use secured HTTPS media URLs that include a file extension.
+
+## Message type reference
+
+The node hides Viber's numeric type codes behind operations and layouts, but
+they are listed here for reference and for anyone migrating from a code that
+addressed types directly.
+
+### Supported Message Types
+
+| Type | Category | Description | Reached via |
+|------|----------|-------------|-------------|
+| 1701 | Transactional | Template (Smartphone only) | Send Template → Reach: Smartphone Only |
+| 1702 | Transactional | Template (All Devices) | Send Template → Reach: All Devices |
+| 6 | Transactional | Text Only (Smartphone) [Legacy] | — (legacy, use Template) |
+| 106 | Transactional | Text Only (All Devices) [Legacy] | — (legacy, use Template) |
+| 206 | Transactional | Text Only (All Devices) [Legacy] | Send Text → Transactional (Legacy) |
+| 225 | Promotional | Text Only | Send Text → Promotional |
+| 306 | Session | Text Only | Send Text → Session |
+| 7 | Promotional | Image/GIF Only (Smartphone) | Send Image → Image Only (Smartphone) |
+| 107 | Promotional | Image/GIF Only (All Devices) | Send Image → Image Only (All Devices) |
+| 207 | Promotional | Image/GIF Only (All Devices) | — |
+| 307 | Session | Image/GIF Only | Send Image → Image Only (Session) |
+| 8 | Promotional | Text + Image + Button (Smartphone) | Send Image → Text + Image + Button (Smartphone) |
+| 108 | Promotional | Text + Image + Button (All Devices) | Send Image → Text + Image + Button (All Devices) |
+| 208 | Promotional | Text + Image + Button (All Devices) | — |
+| 210 | Promotional | Text + Image + Button (Full Screen Image) | Send Image → Text + Image + Button (Full Screen) |
+| 9 | Promotional | Text + Button (Smartphone) | Send Text + Button → Reach: Smartphone Only |
+| 109 | Promotional | Text + Button (All Devices) | Send Text + Button → Reach: All Devices |
+| 209 | Promotional | Text + Button (All Devices) | — |
+| 220 | Transactional | File | Send File → Transactional |
+| 221 | Session | File | Send File → Session |
+| 222 | Transactional | File (No Tracking) | Send File → Transactional (No Tracking) |
+| 223 | Transactional | File (Smartphone) | Send File → Transactional (Smartphone) |
+| 224 | Session | File (Smartphone) | Send File → Session (Smartphone) |
+| 230 | Promotional | Video | Send Video → Video Only |
+| 231 | Promotional | Video + Text | Send Video → Video + Text |
+| 232 | Promotional | Video + Text + Button | Send Video → Video + Text + Button (Opens Video) |
+| 233 | Promotional | Video + Text + Action Button | Send Video → Video + Text + Action Button (Opens URL) |
+| 801 | Transactional | Quick Replies / List | Send List → Transactional |
+| 802 | Session | Quick Replies / List | Send List → Session |
+| 901 | Promotional | Carousel | Send Carousel |
+
+> Legacy text types 6/106 and the bare types 207/8/208/209 have no dedicated UI
+> option because Viber recommends the newer equivalents; they remain documented
+> here for completeness.
+
+### Node Fields
+
+Fields are shown contextually based on the selected operation and layout.
+
+| Field | Operation(s) |
+|-------|--------------|
+| Destination | all |
+| Label | all |
+| Delivery | Send Text |
+| Reach | Send Text + Button, Send Template |
+| Template ID / Language / Parameters | Send Template |
+| Message Text | Send Text, Send Text + Button, Send Image (with button), Send Video (with text), Send List (title), Send Carousel |
+| Layout | Send Image, Send Video |
+| Image URL / Animated GIF | Send Image |
+| Category | Send File, Send List |
+| File URL / File Name / File Type | Send File |
+| Video URL / Thumbnail URL / File Size / Duration | Send Video |
+| Button Caption / Button Action URL | Send Text + Button, Send Image (button layouts), Send Video (button layouts) |
+| UI Style / Options | Send List |
+| Cards | Send Carousel |
+| Simplify | all |
+| Additional Fields (Sequence, Tag, TTL, Tracking Data) | all |
 
 ## Project structure
 

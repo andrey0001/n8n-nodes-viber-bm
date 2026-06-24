@@ -23,6 +23,7 @@ import {
 	resolveImageType,
 	resolveListType,
 	resolveTemplateType,
+	resolveTextButtonType,
 	resolveTextType,
 	resolveVideoType,
 	viberApiRequest,
@@ -103,7 +104,7 @@ export class ViberBusinessMessage implements INodeType {
 							messageToken: response.message_token,
 							...(response.session_id ? { sessionId: response.session_id } : {}),
 						}
-					: response;
+					: { ...response, _requestBody: body };
 
 				returnData.push({ json, pairedItem: { item: i } });
 			} catch (error) {
@@ -131,6 +132,7 @@ type BodyBuilder = (
 
 const BUILDERS: Record<string, BodyBuilder> = {
 	sendText: buildText,
+	sendTextButton: buildTextButton,
 	sendTemplate: buildTemplate,
 	sendImage: buildImage,
 	sendFile: buildFile,
@@ -149,6 +151,37 @@ function buildText(ctx: IExecuteFunctions, i: number, body: IDataObject, trackin
 
 	body.type = type;
 	const message: IDataObject = { '#txt': txt };
+	applyTracking(message, type, tracking);
+	body.message = message;
+}
+
+function buildTextButton(
+	ctx: IExecuteFunctions,
+	i: number,
+	body: IDataObject,
+	tracking: string,
+): void {
+	const reach = ctx.getNodeParameter('textButtonReach', i, 'allDevices') as string;
+	const type = resolveTextButtonType(reach);
+	const txt = normaliseNewlines(ctx.getNodeParameter('messageText', i) as string);
+	assertMaxLength(ctx, txt, LIMITS.TEXT_MAX, 'Message Text', i);
+
+	body.type = type;
+	const message: IDataObject = { '#txt': txt };
+
+	const caption = ctx.getNodeParameter('textButtonCaption', i, '') as string;
+	const action = ctx.getNodeParameter('textButtonAction', i, '') as string;
+	if (caption || action) {
+		if (caption) {
+			assertMaxLength(ctx, caption, LIMITS.CAPTION_MAX, 'Button Caption', i);
+			message['#caption'] = caption;
+		}
+		if (action) message['#action'] = action;
+	} else {
+		message['#caption'] = '';
+		message['#action'] = '';
+	}
+
 	applyTracking(message, type, tracking);
 	body.message = message;
 }
@@ -271,13 +304,13 @@ function buildVideo(ctx: IExecuteFunctions, i: number, body: IDataObject, tracki
 	}
 
 	if (layout === 'videoTextButton' || layout === 'videoTextActionButton') {
-		const caption = ctx.getNodeParameter('caption', i, '') as string;
+		const caption = ctx.getNodeParameter('videoCaption', i, '') as string;
 		if (caption) {
 			assertMaxLength(ctx, caption, LIMITS.CAPTION_MAX, 'Button Caption', i);
 			message['#caption'] = caption;
 		}
 		if (type === 233) {
-			message['#action'] = ctx.getNodeParameter('buttonAction', i, '') as string;
+			message['#action'] = ctx.getNodeParameter('videoButtonAction', i, '') as string;
 		}
 	}
 
@@ -295,7 +328,10 @@ function buildList(ctx: IExecuteFunctions, i: number, body: IDataObject, trackin
 	const options = buildListOptions(ctx, (collection.option as IDataObject[]) ?? [], i);
 
 	body.type = type;
-	body.message = { '#tracking_data': tracking, '#txt': title };
+	body.message = {
+		'#tracking_data': tracking,
+		'#txt': title,
+	};
 	body.survey = {
 		list_message_ui_type: ctx.getNodeParameter('listMessageUiType', i, 1) as number,
 		options,
@@ -315,14 +351,21 @@ function buildCarousel(
 	const items = buildCarouselItems(ctx, (collection.card as IDataObject[]) ?? [], i);
 
 	body.type = 901;
-	body.message = { '#tracking_data': tracking, '#txt': txt };
+	body.message = {
+		'#tracking_data': tracking,
+		'#txt': txt,
+	};
 	body.carousel = { items };
 }
 
 // ─── Shared helpers ────────────────────────────────────────────────
 
 /**
- * Set #tracking_data when the type requires it or an override was supplied.
+ * Set #tracking_data when the type expects it (replyable types) or when the
+ * user supplied a value. Viber accepts an empty string for these types, so we
+ * pass the value through as-is. Types that do not accept tracking data (e.g.
+ * 107/108/109, smartphone-only types) never get the field, since sending it
+ * there triggers status 6 / SRVC_BAD_PARAMETERS.
  */
 function applyTracking(message: IDataObject, type: number, tracking: string): void {
 	if (TRACKING_REQUIRED.has(type) || tracking) {

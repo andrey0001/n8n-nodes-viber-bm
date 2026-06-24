@@ -1,13 +1,19 @@
 {
   "name": "n8n-nodes-viber-bm",
-  "version": "1.0.0",
+  "version": "1.0.6",
   "description": "n8n community node for the Rakuten Viber Business Messages API (v11.3): text, template, image/GIF, file, video, list and carousel messages",
   "keywords": [
     "n8n-community-node-package",
+    "n8n",
     "viber",
     "viber-business-messages",
+    "viber-api",
+    "rakuten",
     "messaging",
-    "business-messages"
+    "business-messages",
+    "notifications",
+    "otp",
+    "chatbot"
   ],
   "license": "MIT",
   "homepage": "https://github.com/andrey0001/n8n-nodes-viber-bm",
@@ -25,7 +31,7 @@
   },
   "main": "index.js",
   "scripts": {
-    "build": "tsc && gulp build:icons",
+    "build": "tsc && gulp build:icons && rimraf dist/package.json dist/tsconfig.tsbuildinfo",
     "dev": "tsc --watch",
     "format": "prettier nodes credentials --write",
     "lint": "eslint nodes credentials package.json",
@@ -52,6 +58,7 @@
     "gulp": "^5.0.0",
     "n8n-workflow": "*",
     "prettier": "^3.3.3",
+    "rimraf": "^5.0.10",
     "typescript": "^5.5.4"
   },
   "peerDependencies": {

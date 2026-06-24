@@ -113,7 +113,14 @@ export const VIBER_TYPE = {
 };
 
 /**
- * Types for which Viber mandates a non-empty #tracking_data field.
+ * Types for which Viber expects a #tracking_data field (the "replyable" types).
+ *
+ * This mirrors the proven set from the original Viber node: the all-devices
+ * promotional/media/button variants, session text/image, files (220), lists
+ * and carousel — plus 802 (session list, added in API v11.2). Smartphone-only
+ * types (7, 8, 9) and the 100-series image/button types (107, 108, 109) do NOT
+ * accept tracking data; sending it on those triggers status 6. The value may be
+ * an empty string — Viber accepts that for these types.
  */
 export const TRACKING_REQUIRED = new Set<number>([
 	206, 207, 208, 209, 210, 220, 225, 306, 307, 230, 231, 232, 233, 801, 802, 901,
