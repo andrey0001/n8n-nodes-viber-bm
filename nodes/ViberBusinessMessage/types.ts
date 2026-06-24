@@ -85,15 +85,18 @@ export const VIBER_TYPE = {
 	TEMPLATE_ALL: 1702,
 	// Image only
 	IMAGE_PROMOTIONAL_SMARTPHONE: 7,
-	IMAGE_PROMOTIONAL_ALL: 107,
+	IMAGE_PROMOTIONAL_ALL: 107,          // no tracking_data support
+	IMAGE_PROMOTIONAL_ALL_TRACKING: 207, // with tracking_data (promotional)
 	IMAGE_SESSION: 307,
 	// Image + text + button
 	IMAGE_BUTTON_SMARTPHONE: 8,
-	IMAGE_BUTTON_ALL: 108,
+	IMAGE_BUTTON_ALL: 108,               // no tracking_data support
+	IMAGE_BUTTON_ALL_TRACKING: 208,      // with tracking_data (promotional)
 	IMAGE_BUTTON_FULLSCREEN: 210,
 	// Text + button
 	TEXT_BUTTON_SMARTPHONE: 9,
-	TEXT_BUTTON_ALL: 109,
+	TEXT_BUTTON_ALL: 109,                // no tracking_data support
+	TEXT_BUTTON_ALL_TRACKING: 209,       // with tracking_data (promotional)
 	// File
 	FILE_TRANSACTIONAL: 220,
 	FILE_SESSION: 221,

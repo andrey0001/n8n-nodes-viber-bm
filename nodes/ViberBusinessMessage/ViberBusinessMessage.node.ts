@@ -28,7 +28,7 @@ import {
 	resolveVideoType,
 	viberApiRequest,
 } from './GenericFunctions';
-import { GIF_CAPABLE, LIMITS, TRACKING_REQUIRED } from './types';
+import { GIF_CAPABLE, LIMITS, TRACKING_REQUIRED, VIBER_TYPE } from './types';
 
 export class ViberBusinessMessage implements INodeType {
 	description: INodeTypeDescription = {
@@ -324,14 +324,21 @@ function buildList(ctx: IExecuteFunctions, i: number, body: IDataObject, trackin
 	const title = normaliseNewlines(ctx.getNodeParameter('messageText', i) as string);
 	assertMaxLength(ctx, title, LIMITS.LIST_TEXT_MAX, 'List Title', i);
 
+	if (!tracking) {
+		throw new NodeOperationError(
+			ctx.getNode(),
+			'Quick Replies (List) messages require a Tracking Data value — it is mandatory per the Viber API.',
+			{ itemIndex: i },
+		);
+	}
+
 	const collection = ctx.getNodeParameter('listOptions', i, {}) as IDataObject;
 	const options = buildListOptions(ctx, (collection.option as IDataObject[]) ?? [], i);
 
 	body.type = type;
-	body.message = {
-		'#tracking_data': tracking,
-		'#txt': title,
-	};
+	const message: IDataObject = { '#txt': title };
+	applyTracking(message, type, tracking);
+	body.message = message;
 	body.survey = {
 		list_message_ui_type: ctx.getNodeParameter('listMessageUiType', i, 1) as number,
 		options,
@@ -347,14 +354,22 @@ function buildCarousel(
 	const txt = normaliseNewlines(ctx.getNodeParameter('messageText', i) as string);
 	assertMaxLength(ctx, txt, LIMITS.TEXT_MAX, 'Message Text', i);
 
+	if (!tracking) {
+		throw new NodeOperationError(
+			ctx.getNode(),
+			'Carousel messages require a Tracking Data value — it is mandatory per the Viber API.',
+			{ itemIndex: i },
+		);
+	}
+
 	const collection = ctx.getNodeParameter('carouselCards', i, {}) as IDataObject;
 	const items = buildCarouselItems(ctx, (collection.card as IDataObject[]) ?? [], i);
 
-	body.type = 901;
-	body.message = {
-		'#tracking_data': tracking,
-		'#txt': txt,
-	};
+	const type = VIBER_TYPE.CAROUSEL;
+	body.type = type;
+	const message: IDataObject = { '#txt': txt };
+	applyTracking(message, type, tracking);
+	body.message = message;
 	body.carousel = { items };
 }
 
@@ -368,7 +383,7 @@ function buildCarousel(
  * there triggers status 6 / SRVC_BAD_PARAMETERS.
  */
 function applyTracking(message: IDataObject, type: number, tracking: string): void {
-	if (TRACKING_REQUIRED.has(type) || tracking) {
+	if (TRACKING_REQUIRED.has(type)) {
 		message['#tracking_data'] = tracking;
 	}
 }

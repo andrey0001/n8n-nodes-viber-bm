@@ -67,6 +67,8 @@ export function resolveTextType(delivery: string): number {
 			return VIBER_TYPE.TEXT_SESSION;
 		case 'transactional':
 		default:
+			// Type 206 is deprecated since April 1, 2026.
+			// New integrations must use the Transactional Templates operation (types 1701/1702).
 			return VIBER_TYPE.TEXT_TRANSACTIONAL_LEGACY;
 	}
 }
@@ -84,7 +86,8 @@ export function resolveImageType(withButton: boolean, variant: string): number {
 				return VIBER_TYPE.IMAGE_BUTTON_FULLSCREEN;
 			case 'allDevices':
 			default:
-				return VIBER_TYPE.IMAGE_BUTTON_ALL;
+				// 208 (not 108) — the all-devices promotional variant that supports #tracking_data
+				return VIBER_TYPE.IMAGE_BUTTON_ALL_TRACKING;
 		}
 	}
 	switch (variant) {
@@ -94,14 +97,15 @@ export function resolveImageType(withButton: boolean, variant: string): number {
 			return VIBER_TYPE.IMAGE_SESSION;
 		case 'allDevices':
 		default:
-			return VIBER_TYPE.IMAGE_PROMOTIONAL_ALL;
+			// 207 (not 107) — the all-devices promotional variant that supports #tracking_data
+			return VIBER_TYPE.IMAGE_PROMOTIONAL_ALL_TRACKING;
 	}
 }
 
 export function resolveTextButtonType(reach: string): number {
 	return reach === 'smartphone'
 		? VIBER_TYPE.TEXT_BUTTON_SMARTPHONE
-		: VIBER_TYPE.TEXT_BUTTON_ALL;
+		: VIBER_TYPE.TEXT_BUTTON_ALL_TRACKING; // 209 (not 109) — supports #tracking_data
 }
 
 export function resolveFileType(category: string): number {
