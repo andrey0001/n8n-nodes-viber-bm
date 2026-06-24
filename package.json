@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-viber-bm",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "n8n community node for the Rakuten Viber Business Messages API (v11.3): text, template, image/GIF, file, video, list and carousel messages",
   "keywords": [
     "n8n-community-node-package",
